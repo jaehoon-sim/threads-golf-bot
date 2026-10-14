@@ -1,0 +1,114 @@
+# 콘텐츠 기둥(pillar). Claude 스케줄 작업이 매 실행마다 여기서 주제를 뽑는다.
+# weight 가 높을수록 자주 뽑히고, cooldown_days 안에 쓴 주제는 다시 쓰지 않는다.
+
+voice:
+  persona: "구력 있는 아마추어. 레슨 프로가 아니라 같이 치는 사람 입장에서 말한다."
+  rules:
+    - "결론 먼저. 첫 줄에서 무슨 얘긴지 드러난다."
+    - "'~같아요' '~인 것 같습니다' 같은 습관성 완충 표현 금지."
+    - "숫자와 구체적 상황을 넣는다. '거리가 는다'가 아니라 '7번 아이언 5야드'."
+    - "이모지는 쓰지 않는다. 해시태그는 마지막 줄에 최대 2개."
+    - "훈계하지 않는다. 내가 겪은 일처럼 쓴다."
+  length: "본문 180~380자. 스레드 체인은 주 1~2회만."
+
+pillars:
+  - key: swing-tech
+    name: 스윙·기술
+    weight: 3
+    cooldown_days: 3
+    angles: [그립, 셋업·정렬, 백스윙 템포, 체중이동, 임팩트, 릴리즈, 미스샷 교정]
+  - key: short-game
+    name: 숏게임·퍼팅
+    weight: 3
+    cooldown_days: 3
+    angles: [어프로치 거리감, 벙커 탈출, 칩샷 클럽 선택, 그린 읽기, 퍼팅 루틴, 3퍼트 줄이기]
+  - key: course-management
+    name: 코스 매니지먼트
+    weight: 3
+    cooldown_days: 4
+    angles: [티샷 목표선, 레이업 판단, 핀 공략 여부, 바람·오르막 보정, 더블보기 방어]
+  - key: practice
+    name: 연습법·루틴
+    weight: 2
+    cooldown_days: 5
+    angles: [스크린골프 활용, 실내 퍼팅 연습, 연습장 배분, 라운드 전 몸풀기, 비시즌 훈련]
+  - key: gear
+    name: 장비·피팅
+    weight: 2
+    cooldown_days: 6
+    angles: [드라이버 로프트, 샤프트 강도, 볼 선택, 웨지 바운스, 피팅 체크포인트, 클럽 관리]
+  - key: rounding-culture
+    name: 라운딩 문화·에티켓
+    weight: 2
+    cooldown_days: 5
+    angles: [조인 매너, 진행 속도, 캐디와의 커뮤니케이션, 동반자 배려, 내기 문화]
+  - key: booking
+    name: 부킹·조인·그린피
+    weight: 2
+    cooldown_days: 5
+    angles: [조인 플랫폼 비교, 부킹 타이밍, 그린피 절약, 지역별 코스 선택, 시즌 특성]
+  - key: mental
+    name: 멘탈·컨디셔닝
+    weight: 1
+    cooldown_days: 7
+    angles: [첫 홀 긴장, 무너진 뒤 회복, 스코어 집착, 라운드 체력, 부상 예방]
+  - key: beginner
+    name: 입문자 온보딩
+    weight: 2
+    cooldown_days: 5
+    angles: [첫 라운드 준비물, 머리 올리기, 클럽 구성, 레슨 고르기, 100타 깨기]
+  - key: tour-watch
+    name: 투어 관전 포인트
+    weight: 1
+    cooldown_days: 4
+    angles: [주간 대회 흐름, 선수 스윙 뜯어보기, 아마추어가 따라 할 부분]
+  - key: trend
+    name: 트렌드·데이터
+    weight: 2
+    cooldown_days: 3
+    angles: [골프 인구 변화, 그린피 추이, 신제품 반응, 커뮤니티 화제, 시즌 이슈]
+
+# 트렌드 모니터링 — trend 기둥이 뽑혔을 때 웹 검색으로 훑을 소스
+trend_sources:
+  queries:
+    - "골프 커뮤니티 화제"
+    - "골프 그린피 추이 2026"
+    - "골프 신제품 반응"
+    - "KLPGA LPGA 이번주"
+  rule: "출처가 확인되는 사실만 인용한다. 확인 안 되면 그 주제는 버리고 다른 기둥으로 간다."
+
+# 발행 슬롯 (Asia/Seoul)
+slots:
+  - { time: "07:30", tone: "짧고 실전적. 오늘 라운드 가는 사람이 바로 써먹을 것." }
+  - { time: "12:30", tone: "가볍게 읽히는 관찰·트렌드." }
+  - { time: "21:00", tone: "생각할 거리. 질문으로 끝내 댓글을 유도." }
+
+# ── 쿠팡파트너스 수익화 ───────────────────────────────────────────
+# enabled 를 true 로 바꾸고 content/products.yaml 에 링크를 채우면 켜진다.
+monetization:
+  enabled: false
+  program: coupang_partners
+
+  # 빈도 — 제휴 글이 많아지면 계정이 광고판처럼 보여 도달과 신뢰가 같이 떨어진다
+  start_after_posts: 20        # 일반 글이 이만큼 쌓이기 전에는 제휴 글을 내지 않는다 (0이면 즉시)
+  max_per_week: 3              # 최근 7일 기준 상한 (주 21편 중 약 15%)
+  min_gap_days: 2              # 제휴 글 사이 최소 간격
+  slot: "21:00"                # 퇴근 후 구매가 몰리는 시간대 슬롯을 제휴 글로 쓴다
+  product_cooldown_days: 21    # 같은 상품 재추천 금지 기간
+
+  # 대가성 문구 — 공정위 추천·보증 심사지침. publish.py 가 코드로 검사하고, 어긋나면 발행하지 않는다
+  disclosure: "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+  disclosure_short: "[광고] 쿠팡 파트너스 활동으로 수수료를 받는 글입니다."   # 본문 첫 줄용
+
+  # 링크 배치 — 본문은 정보 글로 두고, 상품 링크는 첫 답글에 단다
+  #   본문 첫 줄: disclosure_short (상품을 추천하는 글이므로 본문에도 필수)
+  #   첫 답글  : disclosure + 상품명 + 한 줄 소개 + 링크 — publish.py 가 조립한다
+  #   링크 URL 은 Claude 가 쓰지 않는다. products.yaml 에서 코드가 꺼내 붙인다
+  link_placement: first_reply
+
+  rules:
+    - "상품은 반드시 products.yaml 에서 active: true 인 것만 쓴다. 목록에 없는 상품을 언급하거나 링크를 만들지 않는다."
+    - "상품 특징은 products.yaml 의 facts 에 적힌 것만 쓴다. 성능 수치, 할인율, 가격은 지어내지 않는다. 가격은 바뀌므로 아예 쓰지 않는다."
+    - "직접 써본 척하지 않는다. '이런 상황이면 이런 장비가 맞다'는 판단 기준을 주는 글로 쓴다."
+    - "글의 70% 이상은 그 자체로 쓸모 있는 팁이어야 한다. 상품은 마지막에 '이 문제를 장비로 푼다면' 정도로만 붙인다."
+    - "'최저가' '역대급' '지금 안 사면' 같은 구매 압박 표현 금지."

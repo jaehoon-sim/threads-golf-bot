@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1080px; height:1350px; }
+  body {
+    font-family:'Noto Sans KR', -apple-system, sans-serif;
+    background:var(--bg);
+    color:var(--fg);
+    padding:96px 88px;
+    display:flex; flex-direction:column;
+    position:relative; overflow:hidden;
+  }
+  /* accent themes */
+  body[data-accent="fairway"]  { --bg:#0F2A1D; --fg:#F2F7F3; --accent:#7BD88F; --muted:#9BB6A5; }
+  body[data-accent="dawn"]     { --bg:#131A2B; --fg:#F4F6FB; --accent:#8FB4FF; --muted:#94A3C4; }
+  body[data-accent="sand"]     { --bg:#241C12; --fg:#FAF5EC; --accent:#E8B865; --muted:#B8A488; }
+  body[data-accent="clay"]     { --bg:#2A1518; --fg:#FBF2F2; --accent:#F08A7C; --muted:#C0999A; }
+
+  .glow {
+    position:absolute; width:900px; height:900px; border-radius:50%;
+    background:radial-gradient(circle, var(--accent) 0%, transparent 68%);
+    opacity:.16; top:-320px; right:-300px; filter:blur(20px);
+  }
+  /* 제휴 게시물 표기 — 이미지 안에서도 광고임이 드러나야 한다 */
+  .ad {
+    display:none; position:absolute; top:52px; right:56px;
+    font-size:28px; font-weight:700; letter-spacing:.02em;
+    color:var(--bg); background:var(--fg);
+    padding:10px 22px; border-radius:40px;
+  }
+  body[data-ad="1"] .ad { display:block; }
+  .content { flex:1; display:flex; flex-direction:column; justify-content:center; padding-bottom:24px; }
+  .kicker {
+    font-size:32px; font-weight:700; letter-spacing:.16em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:40px;
+    display:flex; align-items:center; gap:20px;
+  }
+  .kicker::before { content:''; width:64px; height:5px; background:var(--accent); border-radius:3px; }
+  .headline {
+    font-size:var(--hsize,104px); font-weight:900; line-height:1.22;
+    letter-spacing:-0.025em; word-break:keep-all; margin-bottom:48px;
+  }
+  .rule { width:120px; height:6px; background:var(--accent); border-radius:3px; margin-bottom:44px; opacity:.85; }
+  .body {
+    font-size:var(--bsize,44px); font-weight:400; line-height:1.62;
+    color:var(--muted); word-break:keep-all; white-space:pre-wrap;
+  }
+  .footer {
+    display:flex; align-items:baseline; justify-content:space-between;
+    border-top:2px solid rgba(255,255,255,.14); padding-top:36px;
+  }
+  .handle { font-size:34px; font-weight:700; color:var(--fg); opacity:.92; }
+  .tag { font-size:30px; font-weight:500; color:var(--accent); letter-spacing:.04em; }
+</style>
+</head>
+<body data-accent="fairway" data-ad="0">
+  <div class="glow"></div>
+  <div class="ad">광고 · 쿠팡파트너스</div>
+  <div class="content">
+    <div class="kicker" id="kicker"></div>
+    <h1 class="headline" id="headline"></h1>
+    <div class="rule"></div>
+    <p class="body" id="body"></p>
+  </div>
+  <div class="footer">
+    <span class="handle" id="handle"></span>
+    <span class="tag" id="tag"></span>
+  </div>
+</body>
+</html>
