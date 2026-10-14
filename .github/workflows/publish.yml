@@ -2,7 +2,7 @@ name: publish-to-threads
 
 on:
   schedule:
-    - cron: "*/30 * * * *"      # 30분마다 큐를 확인 (UTC)
+    - cron: "7,22,37,52 * * * *"   # 15분마다, 붐비는 정각·30분을 피함
   workflow_dispatch:
     inputs:
       dry_run:
