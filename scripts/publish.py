@@ -6,7 +6,7 @@
     THREADS_ACCESS_TOKEN  장기 액세스 토큰 (60일)
     GITHUB_REPOSITORY     owner/repo (Actions가 자동 주입)
     IMAGE_BRANCH          이미지 raw URL 기준 브랜치 (기본 main)
-    DRY_RUN=1             발행하지 않고 계획만 출력
+    DRY_RUN=1             발행하지 않고 계획만 출력 (파일·히스토리를 전혀 건드리지 않는다)
 
 제휴 게시물 안전장치 (완전 자동 발행이라 사람 대신 코드가 막는다)
     - 제휴 글 본문은 반드시 짧은 대가성 문구로 시작해야 한다
@@ -117,6 +117,9 @@ def due_items(now: dt.datetime) -> list[tuple[pathlib.Path, dict]]:
         if 0 <= delay <= GRACE_MIN:
             out.append((path, item))
         elif delay > GRACE_MIN:
+            if DRY_RUN:
+                log(f"-- [dry-run] 시각 초과({delay:.0f}분) — 실제 실행이면 만료 처리됨: {path.name}")
+                continue
             log(f"-- 시각 초과({delay:.0f}분), 만료 처리: {path.name}")
             record(item, status="expired", error=f"{delay:.0f}분 지연")
             path.rename(DONE / path.name)
@@ -125,6 +128,8 @@ def due_items(now: dt.datetime) -> list[tuple[pathlib.Path, dict]]:
 
 def record(item: dict, *, status: str, post_id: str | None = None,
            error: str | None = None) -> None:
+    if DRY_RUN:
+        return
     HISTORY.parent.mkdir(exist_ok=True)
     row = {
         "id": item.get("id"),
@@ -208,6 +213,8 @@ def process(path: pathlib.Path, item: dict) -> bool:
     problem = validate(item)
     if problem:
         log(f"!! 검증 실패 {item_id}: {problem}")
+        if DRY_RUN:
+            return False
         record(item, status="invalid", error=problem)
         item["status"] = "invalid"
         item["last_error"] = problem
@@ -270,7 +277,8 @@ def main() -> int:
     if not DRY_RUN and not (USER_ID and TOKEN):
         log("!! THREADS_USER_ID / THREADS_ACCESS_TOKEN 이 설정되지 않았습니다.")
         return 1
-    DONE.mkdir(parents=True, exist_ok=True)
+    if not DRY_RUN:
+        DONE.mkdir(parents=True, exist_ok=True)
 
     now = dt.datetime.now(dt.timezone.utc)
     items = due_items(now)

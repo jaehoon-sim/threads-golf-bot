@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import sys
 
@@ -23,6 +24,27 @@ ASSETS = ROOT / "assets"
 ACCENTS = ("fairway", "dawn", "sand", "clay")
 
 W, H = 1080, 1350
+
+
+# 클라우드 환경에는 Chromium 이 미리 깔려 있다. 설치된 Playwright 버전과 브라우저
+# 버전이 어긋나면 기본 실행이 실패하므로, 알려진 경로의 실행 파일로 한 번 더 시도한다.
+FALLBACK_BROWSERS = (
+    os.environ.get("CHROMIUM_PATH", ""),
+    "/opt/pw-browsers/chromium",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+)
+
+
+def launch_browser(pw):
+    try:
+        return pw.chromium.launch()
+    except Exception as first:                       # noqa: BLE001
+        for path in FALLBACK_BROWSERS:
+            if path and pathlib.Path(path).exists():
+                print(f"기본 Chromium 실행 실패 → {path} 로 재시도", file=sys.stderr)
+                return pw.chromium.launch(executable_path=path)
+        raise first
 
 
 def _fit(headline: str, body: str) -> tuple[int, int]:
@@ -86,7 +108,7 @@ def main() -> int:
         return 1
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch()
+        browser = launch_browser(pw)
         page = browser.new_page(viewport={"width": W, "height": H}, device_scale_factor=1)
         for path in targets:
             item = json.loads(path.read_text(encoding="utf-8"))

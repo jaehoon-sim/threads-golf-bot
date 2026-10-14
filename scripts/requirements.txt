@@ -1,3 +1,4 @@
 requests>=2.31
 PyYAML>=6.0
-playwright>=1.44
+# 카드 렌더링용. 클라우드 실행 환경에는 이미 깔려 있으니 재설치하지 않는다.
+# 로컬에서 렌더링할 때만: pip install playwright && playwright install chromium
