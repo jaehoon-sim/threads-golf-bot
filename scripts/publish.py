@@ -40,7 +40,7 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "")
 BRANCH = os.environ.get("IMAGE_BRANCH", "main")
 DRY_RUN = os.environ.get("DRY_RUN") == "1"
 
-GRACE_MIN = 90          # 예약 시각을 이만큼 지난 항목까지는 따라잡아 발행
+GRACE_MIN = 360          # 예약 시각을 이만큼 지난 항목까지는 따라잡아 발행
 MEDIA_WAIT = 35         # 컨테이너 생성 후 대기 (Meta 권장 30초 이상)
 TEXT_LIMIT = 500
 COUPANG_RE = re.compile(r"(coupang\.com|coupa\.ng)", re.I)
