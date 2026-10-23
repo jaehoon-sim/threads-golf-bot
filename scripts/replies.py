@@ -116,10 +116,15 @@ def fetch() -> int:
         while url:
             r = requests.get(url, params=params, timeout=30)
             if r.status_code >= 400:
-                log(f"!! 댓글 조회 실패 {post_id} {r.status_code}: {r.text[:200]}")
-                if r.status_code in (400, 403) and "permission" in r.text.lower():
-                    log("!! threads_read_replies 권한이 없는 토큰입니다. 토큰을 재발급하세요.")
+                try:
+                    code = (r.json().get("error") or {}).get("code")
+                except ValueError:
+                    code = None
+                if code in (10, 190, 200):      # 권한 없음·토큰 문제
+                    log(f"!! 토큰/권한 오류({code}): {r.text[:200]}")
+                    append_jsonl(INBOX, new_rows)
                     return 0
+                log(f"-- 댓글 조회 불가 글 건너뜀 {post_id} ({code})")   # 삭제된 글 등
                 break
             body = r.json()
             for c in body.get("data", []):

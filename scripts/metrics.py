@@ -64,15 +64,20 @@ def main() -> int:
     for r in rows:
         pid = r["post_id"]
         when = dt.datetime.fromisoformat(r["published_at"])
-        if pid in posts and when < cutoff:
+        if pid in posts and (when < cutoff or posts[pid].get("unavailable")):
             continue
         resp = requests.get(f"{API}/{pid}/insights",
                             params={"metric": METRICS, "access_token": TOKEN}, timeout=30)
         if resp.status_code >= 400:
-            log(f"!! 인사이트 실패 {pid} {resp.status_code}: {resp.text[:200]}")
-            if "permission" in resp.text.lower():
-                log("!! threads_manage_insights 권한이 없는 토큰입니다. 토큰을 재발급하세요.")
+            err = (resp.json().get("error") or {}) if resp.headers.get("content-type", "").startswith("application/json") else {}
+            code = err.get("code")
+            if code in (10, 190, 200):          # 권한 없음·토큰 문제 → 더 돌려도 소용없다
+                log(f"!! 토큰/권한 오류({code}): {err.get('message', resp.text)[:200]}")
                 return 0
+            # code 100 등: 삭제된 글이거나 조회 불가 → 표시만 해 두고 다음 글로
+            log(f"-- 조회 불가 글 건너뜀 {pid} ({code})")
+            posts[pid] = {"id": r.get("id"), "published_at": r.get("published_at"),
+                          "text": (r.get("text") or "")[:80], "unavailable": True}
             continue
         vals = {}
         for m in resp.json().get("data", []):
