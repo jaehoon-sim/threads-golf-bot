@@ -38,12 +38,35 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
         run: python scripts/publish.py
 
+      - name: 답글 발행
+        continue-on-error: true
+        env:
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+        run: python scripts/replies.py send
+
+      - name: 댓글 수집
+        continue-on-error: true
+        env:
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+        run: python scripts/replies.py fetch
+
+      - name: 인사이트 수집 (3시간마다)
+        continue-on-error: true
+        env:
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: python scripts/metrics.py
+
       - name: 발행 결과 커밋
         if: always()
         run: |
           git config user.name  "threads-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add queue history
+          git add queue history inbox 2>/dev/null || git add queue history
           git diff --staged --quiet || git commit -m "chore: 발행 결과 반영 [skip ci]"
           git pull --rebase --autostash || true
           git push
