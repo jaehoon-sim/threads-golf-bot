@@ -130,7 +130,7 @@ def plan_affiliate(pool: dict, rows: list[dict], queued: list[dict], now: dt.dat
         "disclosure": mon.get("disclosure"),
         "link_placement": mon.get("link_placement", "first_reply"),
         "rules": mon.get("rules", []),
-        "products": ready[:3],
+        "products": ready,   # 결과 정리 글의 원글 소재에 맞는 상품을 고를 수 있게 전부 넘긴다
         "skipped": skipped,
         "week_count": len(week),
     }

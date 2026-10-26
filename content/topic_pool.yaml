@@ -86,12 +86,12 @@ slots:
 # ── 쿠팡파트너스 수익화 ───────────────────────────────────────────
 # enabled 를 true 로 바꾸고 content/products.yaml 에 링크를 채우면 켜진다.
 monetization:
-  enabled: false
+  enabled: true
   program: coupang_partners
 
   # 빈도 — 제휴 글이 많아지면 계정이 광고판처럼 보여 도달과 신뢰가 같이 떨어진다
   start_after_posts: 20        # 일반 글이 이만큼 쌓이기 전에는 제휴 글을 내지 않는다 (0이면 즉시)
-  max_per_week: 3              # 최근 7일 기준 상한 (주 21편 중 약 15%)
+  max_per_week: 2              # 최근 7일 기준 상한 (결과 정리 글에만 붙인다)
   min_gap_days: 2              # 제휴 글 사이 최소 간격
   slot: "21:00"                # 퇴근 후 구매가 몰리는 시간대 슬롯을 제휴 글로 쓴다
   product_cooldown_days: 21    # 같은 상품 재추천 금지 기간
