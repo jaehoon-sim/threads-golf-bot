@@ -44,6 +44,7 @@ ANSWER_WITHIN_H = 24    # 이보다 오래된 댓글에는 답하지 않는다
 MAX_PER_POST = 10
 MAX_PER_DAY = 50
 REPLY_LIMIT = 200
+RESULT_LIMIT = 450      # kind="result": 원글 아래에 다는 결과 정리 답글
 GRACE_MIN = 180         # 예약 시각을 이만큼 넘긴 답글은 버린다 (뒤늦은 답글은 어색함)
 MEDIA_WAIT = 30
 BAD_RE = re.compile(r"(https?://|www\.|coupang|coupa\.ng|@\w)", re.I)
@@ -258,7 +259,8 @@ def send() -> int:
             finish(path, item, "expired", error=f"{late:.0f}분 지연")
             continue
         text = (item.get("text") or "").strip()
-        if not text or len(text) > REPLY_LIMIT or BAD_RE.search(text):
+        limit = RESULT_LIMIT if item.get("kind") == "result" else REPLY_LIMIT
+        if not text or len(text) > limit or BAD_RE.search(text):
             finish(path, item, "invalid", error="빈 답글·길이 초과·링크/멘션 포함")
             continue
         if sent_24h + sent >= MAX_PER_DAY:
